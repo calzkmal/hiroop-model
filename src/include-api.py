@@ -1,14 +1,19 @@
-from predictor import extract_features
+from pipeline import FeatureExtractor  # Import the FeatureExtractor class
 from flask import Flask, request, jsonify
 import tensorflow as tf
 import numpy as np
 
 app = Flask(__name__)
 
-model_path = 'hiroop-env\model\modelv3.keras'
+# Load the model
+model_path = 'model\\modelv3.keras'
 model = tf.keras.models.load_model(model_path)
 
+# Define the class labels
 label_classes = ['Bronchial', 'asthma', 'copd', 'healthy', 'pneumonia']
+
+# Initialize the FeatureExtractor
+extractor = FeatureExtractor()
 
 @app.route("/predict-audio", methods=['POST'])
 def predict_audio():
@@ -18,12 +23,20 @@ def predict_audio():
         return jsonify({"error": "No audio data provided"}), 400
     
     audio_path = data['audio_path']
-    features = extract_features(audio_path)
+    
+    # Extract features from the audio file
+    features = extractor.get_features(audio_path)
     
     if features is not None:
+        # Reshape the data to match the model input shape (None, 162, 1)
         features = np.expand_dims(features, axis=(0, 2))
+        
+        # Make a prediction
         prediction = model.predict(features)
+        
+        # Convert prediction to a dictionary with probabilities and labels
         prediction_probabilities = {label: float(prob) for label, prob in zip(label_classes, prediction[0])}
+        
         return jsonify(prediction_probabilities)
     else:
         return jsonify({"error": "Failed to extract features for prediction"}), 500
