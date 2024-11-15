@@ -6,7 +6,7 @@ import numpy as np
 app = Flask(__name__)
 
 # Load the model
-model_path = 'model\\modelv3.keras'
+model_path = 'model\\model.keras'
 model = tf.keras.models.load_model(model_path)
 
 # Define the class labels

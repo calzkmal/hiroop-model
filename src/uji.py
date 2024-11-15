@@ -3,7 +3,7 @@ import tensorflow as tf
 from pipeline import FeatureExtractor  # Import the FeatureExtractor class
 
 # Define the paths for the model and audio file
-model_path = 'model\\modelv3.keras'
+model_path = 'model\\model.keras'
 audio_path = 'data\\uji_healthy.wav'
 
 # Define the class labels
